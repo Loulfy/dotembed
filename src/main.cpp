@@ -11,7 +11,7 @@ int main()
         {
             std::cout << "Find: " << entry.path() << std::endl;
             auto assembly = host->loadAssembly(entry.path());
-            assembly->execute(L"Hello");
+            assembly->execute(STR("Hello"));
         }
     }
 

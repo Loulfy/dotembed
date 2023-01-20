@@ -32,7 +32,7 @@ namespace dot
         void loadFunction(const string_t& method);
         void execute(const string_t& method) override;
 
-        std::wstring name;
+        string_t name;
         load_assembly_and_get_function_pointer_fn handle = nullptr;
         std::unordered_map<string_t, component_entry_point_fn> funcs;
     };
@@ -132,8 +132,8 @@ namespace dot
 
     void AssemblyImpl::loadFunction(const string_t& method)
     {
-        const string_t path = name + L".dll";
-        const string_t type = name + L".Lib, " + name;
+        const string_t path = name + STR(".dll");
+        const string_t type = name + STR(".Lib, ") + name;
 
         component_entry_point_fn entry = nullptr;
         int rc = handle(

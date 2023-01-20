@@ -13,8 +13,10 @@ namespace dot
 {
     #ifndef WIN32
     using char_t = char;
+    #define STR(s) s
     #else
     using char_t = wchar_t;
+    #define STR(s) L ## s
     #endif
     using string_t = std::basic_string<char_t>;
     class Assembly
