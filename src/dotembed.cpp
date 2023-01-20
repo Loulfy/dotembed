@@ -23,24 +23,24 @@ namespace dot
         hostfxr_get_runtime_delegate_fn get_delegate_fptr;
         hostfxr_close_fn close_fptr;
 
-        static void* load_library(const wchar_t* path);
+        static void* load_library(const char_t* path);
         static void* get_export(void* h, const char* name);
     };
 
     struct AssemblyImpl : public Assembly
     {
-        void loadFunction(const std::wstring& method);
-        void execute(const std::wstring& method) override;
+        void loadFunction(const string_t& method);
+        void execute(const string_t& method) override;
 
         std::wstring name;
         load_assembly_and_get_function_pointer_fn handle = nullptr;
-        std::unordered_map<std::wstring, component_entry_point_fn> funcs;
+        std::unordered_map<string_t, component_entry_point_fn> funcs;
     };
 
     #ifdef WIN32
     #include <Windows.h>
 
-    void* HostFxrImpl::load_library(const wchar_t* path)
+    void* HostFxrImpl::load_library(const char_t* path)
     {
         HMODULE h = LoadLibraryW(path);
         assert(h != nullptr);
@@ -61,7 +61,7 @@ namespace dot
 
     #define MAX_PATH PATH_MAX
 
-    void* HostFxrImpl::load_library(const wchar_t* path)
+    void* HostFxrImpl::load_library(const char_t* path)
     {
         void* h = dlopen(path, RTLD_LAZY | RTLD_LOCAL);
         assert(h != nullptr);
@@ -112,7 +112,11 @@ namespace dot
 
         auto assembly = std::make_unique<AssemblyImpl>();
         auto name = config_path.stem().stem().string();
+        #ifdef WIN32
         assembly->name = std::wstring(name.begin(), name.end());
+        #else
+        assembly->name = name;
+        #endif
 
         // Get the load assembly function pointer
         rc = get_delegate_fptr(cxt, hdt_load_assembly_and_get_function_pointer,
@@ -126,10 +130,10 @@ namespace dot
         return assembly;
     }
 
-    void AssemblyImpl::loadFunction(const std::wstring& method)
+    void AssemblyImpl::loadFunction(const string_t& method)
     {
-        const std::wstring path = name + L".dll";
-        const std::wstring type = name + L".Lib, " + name;
+        const string_t path = name + L".dll";
+        const string_t type = name + L".Lib, " + name;
 
         component_entry_point_fn entry = nullptr;
         int rc = handle(
@@ -144,7 +148,7 @@ namespace dot
         funcs[method] = entry;
     }
 
-    void AssemblyImpl::execute(const std::wstring& method)
+    void AssemblyImpl::execute(const string_t& method)
     {
         struct lib_args
         {

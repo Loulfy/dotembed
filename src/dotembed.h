@@ -11,6 +11,12 @@
 
 namespace dot
 {
+    #ifndef WIN32
+    using char_t = char;
+    #else
+    using char_t = wchar_t;
+    #endif
+    using string_t = std::basic_string<char_t>;
     class Assembly
     {
     public:
@@ -24,7 +30,7 @@ namespace dot
         Assembly& operator=(const Assembly&) = delete;
         Assembly& operator=(const Assembly&&) = delete;
 
-        virtual void execute(const std::wstring& method) = 0;
+        virtual void execute(const string_t& method) = 0;
     };
 
     using AssemblyPtr = std::unique_ptr<Assembly>;
