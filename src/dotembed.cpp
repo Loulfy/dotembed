@@ -156,7 +156,7 @@ namespace dot
             int number;
         };
 
-        lib_args args{L"from host!", 42};
+        lib_args args{STR("from host!"), 42};
 
         if(funcs.contains(method))
             funcs[method](&args, sizeof(args));
